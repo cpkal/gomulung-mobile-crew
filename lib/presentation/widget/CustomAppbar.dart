@@ -24,8 +24,10 @@ class CustomAppBar {
             activeTrackColor: Colors.lightGreenAccent,
             activeColor: Colors.green,
           );
-        })
+        }),
       ],
+      //hide back button
+      automaticallyImplyLeading: false,
     );
   }
 }

@@ -1,9 +1,27 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_crew/core/route/route_paths.dart';
+import 'package:las_crew/main.dart';
+import 'package:las_crew/presentation/bloc/auth/auth_bloc.dart';
 
 class RegisterLegalDocuments extends StatefulWidget {
-  RegisterLegalDocuments({super.key});
+  final String name;
+  final String phone_number;
+  final String address;
+  final String email;
+  final String password;
+
+  RegisterLegalDocuments({
+    super.key,
+    required this.name,
+    required this.phone_number,
+    required this.address,
+    required this.email,
+    required this.password,
+  });
 
   @override
   _RegisterLegalDocumentsState createState() => _RegisterLegalDocumentsState();
@@ -21,7 +39,6 @@ class _RegisterLegalDocumentsState extends State<RegisterLegalDocuments> {
       setState(() {
         ktpText = "Terupload"; // Change button text to "Terupload"
       });
-      print(ktp?.files.single.path);
     }
   }
 
@@ -31,7 +48,6 @@ class _RegisterLegalDocumentsState extends State<RegisterLegalDocuments> {
       setState(() {
         simText = "Terupload"; // Change button text to "Terupload"
       });
-      print(sim?.files.single.path);
     }
   }
 
@@ -41,8 +57,12 @@ class _RegisterLegalDocumentsState extends State<RegisterLegalDocuments> {
       setState(() {
         stnkText = "Terupload"; // Change button text to "Terupload"
       });
-      print(stnk?.files.single.path);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -102,8 +122,20 @@ class _RegisterLegalDocumentsState extends State<RegisterLegalDocuments> {
             child: ElevatedButton(
               onPressed: () {
                 // Remove all previous routes
-                Navigator.pushNamedAndRemoveUntil(
-                    context, RoutePaths.order, (route) => false);
+                context.read<AuthBloc>().add(
+                      AuthRegisterEvent(
+                        name: widget.name,
+                        phone_number: widget.phone_number,
+                        address: widget.address,
+                        email: widget.email,
+                        password: widget.password,
+                        sim: File(sim!.files.single.path!),
+                        ktp: File(ktp!.files.single.path!),
+                        stnk: File(stnk!.files.single.path!),
+                      ),
+                    );
+                // Navigator.pushNamedAndRemoveUntil(
+                //     context, RoutePaths.order, (route) => false);
               },
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,

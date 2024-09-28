@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_crew/core/route/route_paths.dart';
 import 'package:las_crew/presentation/bloc/bottom_nav_bar/bottom_nav_bar_bloc.dart';
 import 'package:las_crew/presentation/bloc/location_tracker/location_tracker_bloc.dart';
+import 'package:las_crew/presentation/page/ask_login_register.dart';
 import 'package:las_crew/presentation/page/chat.dart';
 import 'package:las_crew/presentation/page/myaccount.dart';
 import 'package:las_crew/presentation/page/order_by_categories.dart';

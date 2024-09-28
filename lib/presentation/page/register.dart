@@ -18,7 +18,17 @@ class RegisterPage extends StatelessWidget {
   void _handleSubmit(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       //remove all prev routes
-      Navigator.pushNamed(context, RoutePaths.registerUploadLegalDocuments);
+      Navigator.pushNamed(
+        context,
+        RoutePaths.registerUploadLegalDocuments,
+        arguments: {
+          'name': nameController.text,
+          'email': emailController.text,
+          'phone_number': phoneNumberController.text,
+          'password': passwordController.text,
+          'address': addressController.text,
+        },
+      );
     }
   }
 
@@ -162,7 +172,7 @@ class RegisterPage extends StatelessWidget {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Center(
-                    child: Text("Masuk"),
+                    child: Text("Lanjut"),
                   ),
                 ),
               ),

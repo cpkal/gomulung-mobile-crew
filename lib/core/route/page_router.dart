@@ -22,7 +22,17 @@ class PageRouter {
       case RoutePaths.register:
         return MaterialPageRoute(builder: (_) => RegisterPage());
       case RoutePaths.registerUploadLegalDocuments:
-        return MaterialPageRoute(builder: (_) => RegisterLegalDocuments());
+        final args =
+            settings.arguments as Map<String, dynamic>?; // Get the arguments
+        return MaterialPageRoute(
+          builder: (context) => RegisterLegalDocuments(
+            name: args?['name'],
+            phone_number: args?['phone_number'],
+            address: args?['address'],
+            email: args?['email'],
+            password: args?['password'],
+          ),
+        );
       case RoutePaths.orderProcess:
         return MaterialPageRoute(builder: (_) => OrderProcessPage());
       default:
