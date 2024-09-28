@@ -5,6 +5,7 @@ import 'package:las_crew/presentation/page/login.dart';
 import 'package:las_crew/presentation/page/order_by_categories.dart';
 import 'package:las_crew/presentation/page/order_process.dart';
 import 'package:las_crew/presentation/page/register.dart';
+import 'package:las_crew/presentation/page/register_legal_documents.dart';
 import 'package:las_crew/presentation/page/sub_root.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -20,6 +21,8 @@ class PageRouter {
         return MaterialPageRoute(builder: (_) => LoginPage());
       case RoutePaths.register:
         return MaterialPageRoute(builder: (_) => RegisterPage());
+      case RoutePaths.registerUploadLegalDocuments:
+        return MaterialPageRoute(builder: (_) => RegisterLegalDocuments());
       case RoutePaths.orderProcess:
         return MaterialPageRoute(builder: (_) => OrderProcessPage());
       default:

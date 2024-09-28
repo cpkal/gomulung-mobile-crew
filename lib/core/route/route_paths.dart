@@ -10,4 +10,6 @@ class RoutePaths {
   static const String forgotPassword = '/forgot-password';
   static const String filteredOrders = '/filtered-orders';
   static const String orderProcess = '/order-process';
+  static const String registerUploadLegalDocuments =
+      '/register-upload-legal-documents';
 }

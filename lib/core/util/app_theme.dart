@@ -31,6 +31,9 @@ ThemeData appTheme() {
       style: ElevatedButton.styleFrom(
         backgroundColor: Color(0xFF285238), // Button background color
         foregroundColor: Colors.white, // Button text color
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // Set your desired radius
+        ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(

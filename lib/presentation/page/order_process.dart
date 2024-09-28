@@ -40,23 +40,35 @@ class OrderProcessPage extends StatelessWidget {
             ),
           ),
           //elevated button 'TINDAKAN'
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Text('TINDAKAN'),
-            ),
-          ),
+
           SizedBox(
             height: 10,
           ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Text('SUDAH SAMPAI'),
-            ),
-          ),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  //border color primary
+                  side:
+                      BorderSide(color: Theme.of(context).colorScheme.primary),
+                ),
+                child: Icon(Icons.handyman_outlined),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(),
+                  onPressed: () {},
+                  child: Text('SUDAH SAMPAI'),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
