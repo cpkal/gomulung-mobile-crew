@@ -1,14 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:las_crew/core/route/route_paths.dart';
 import 'package:las_crew/presentation/bloc/bottom_nav_bar/bottom_nav_bar_bloc.dart';
 import 'package:las_crew/presentation/bloc/location_tracker/location_tracker_bloc.dart';
-import 'package:las_crew/presentation/page/ask_login_register.dart';
+import 'package:las_crew/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_crew/presentation/page/chat.dart';
+import 'package:las_crew/presentation/page/orders.dart';
 import 'package:las_crew/presentation/page/myaccount.dart';
 import 'package:las_crew/presentation/page/order_by_categories.dart';
 import 'package:las_crew/presentation/page/order_process.dart';
 import 'package:las_crew/presentation/widget/CustomAppbar.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -22,9 +25,13 @@ class SubRootPage extends StatefulWidget {
 class _SubRootPageState extends State<SubRootPage> {
   _SubRootPageState();
 
+  bool wsAlreadyConnected = false;
+
   @override
   void initState() {
+    //run first
     context.read<LocationTrackerBloc>().add(GetPermission());
+
     // TODO: implement initState
     super.initState();
   }
@@ -34,66 +41,92 @@ class _SubRootPageState extends State<SubRootPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LocationTrackerBloc, LocationTrackerState>(
-      builder: (context, state) {
-        if (state is PermissionGranted) {
-          context.read<LocationTrackerBloc>().add(StartTracking());
-        } else if (state is PermissionDenied) {
-          //show dialog
-        } else if (state is PermissionDeniedForever) {
-          //show dialog
-        }
-
-        return BlocConsumer<BottomNavBarBloc, BottomNavBarState>(
+    return BlocListener<LocationTrackerBloc, LocationTrackerState>(
+        listener: (context, state) {
+          if (state is PermissionGranted) {
+            context.read<LocationTrackerBloc>().add(StartTracking());
+          } else if (state is LocationChanged) {
+            if (!wsAlreadyConnected) {
+              context.read<WebsocketBloc>().add(WebsocketConnect());
+            }
+          }
+        },
+        child: BlocConsumer<WebsocketBloc, WebsocketState>(
           listener: (context, state) {
-            _controller.index = state.currentIndex;
+            if (state is WebsocketConnected) {
+              final driver = {
+                "event": "register_crew",
+                "data": {
+                  "id": 1,
+                  "location": {
+                    "lat": context.read<LocationTrackerBloc>().state.latitude,
+                    "long": context.read<LocationTrackerBloc>().state.longitude
+                  }
+                }
+              };
+
+              context
+                  .read<WebsocketBloc>()
+                  .add(WebsocketSend(jsonEncode(driver)));
+            } else if (state is WebsocketReceived) {
+              final data = jsonDecode(state.message);
+              if (data['event'] == 'new_order') {
+                print(data);
+              }
+            }
           },
           builder: (context, state) {
-            return Scaffold(
-              appBar: CustomAppBar.build(context, 'LAS'),
-              body: PersistentTabView(
-                context,
-                controller: _controller,
-                screens: _buildScreens(),
-                items: _navBarsItems(context),
-                handleAndroidBackButtonPress: true, // Default is true.
-                resizeToAvoidBottomInset:
-                    true, // This needs to be true if you want to move up the screen on a non-scrollable screen when keyboard appears. Default is true.
-                stateManagement: true, // Default is true.
-                hideNavigationBarWhenKeyboardAppears: true,
-                // popBehaviorOnSelectedNavBarItemPress: PopActionScreensType.all,
-                padding: const EdgeInsets.only(top: 8),
-                backgroundColor: Colors.white,
-                isVisible: true,
-                animationSettings: const NavBarAnimationSettings(
-                  navBarItemAnimation: ItemAnimationSettings(
-                    // Navigation Bar's items animation properties.
-                    duration: Duration(milliseconds: 400),
-                    curve: Curves.ease,
+            return BlocConsumer<BottomNavBarBloc, BottomNavBarState>(
+              listener: (context, state) {
+                _controller.index = state.currentIndex;
+              },
+              builder: (context, state) {
+                return Scaffold(
+                  appBar: CustomAppBar.build(context, 'LAS'),
+                  body: PersistentTabView(
+                    context,
+                    controller: _controller,
+                    screens: _buildScreens(),
+                    items: _navBarsItems(context),
+                    handleAndroidBackButtonPress: true, // Default is true.
+                    resizeToAvoidBottomInset:
+                        true, // This needs to be true if you want to move up the screen on a non-scrollable screen when keyboard appears. Default is true.
+                    stateManagement: true, // Default is true.
+                    hideNavigationBarWhenKeyboardAppears: true,
+                    // popBehaviorOnSelectedNavBarItemPress: PopActionScreensType.all,
+                    padding: const EdgeInsets.only(top: 8),
+                    backgroundColor: Colors.white,
+                    isVisible: true,
+                    animationSettings: const NavBarAnimationSettings(
+                      navBarItemAnimation: ItemAnimationSettings(
+                        // Navigation Bar's items animation properties.
+                        duration: Duration(milliseconds: 400),
+                        curve: Curves.ease,
+                      ),
+                      screenTransitionAnimation:
+                          ScreenTransitionAnimationSettings(
+                        // Screen transition animation on change of selected tab.
+                        animateTabTransition: true,
+                        duration: Duration(milliseconds: 200),
+                        screenTransitionAnimationType:
+                            ScreenTransitionAnimationType.fadeIn,
+                      ),
+                    ),
+                    confineToSafeArea: true,
+                    navBarHeight: kBottomNavigationBarHeight,
+                    navBarStyle: _navBarStyle,
                   ),
-                  screenTransitionAnimation: ScreenTransitionAnimationSettings(
-                    // Screen transition animation on change of selected tab.
-                    animateTabTransition: true,
-                    duration: Duration(milliseconds: 200),
-                    screenTransitionAnimationType:
-                        ScreenTransitionAnimationType.fadeIn,
-                  ),
-                ),
-                confineToSafeArea: true,
-                navBarHeight: kBottomNavigationBarHeight,
-                navBarStyle: _navBarStyle,
-              ),
+                );
+              },
             );
           },
-        );
-      },
-    );
+        ));
   }
 }
 
 List<Widget> _buildScreens() {
   return [
-    OrderByCategories(),
+    OrderPage(),
     OrderProcessPage(),
     ChatPage(),
     MyAccountPage(),

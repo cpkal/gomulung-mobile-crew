@@ -29,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'password': event.password,
     }).then((res) {
       var token = jsonDecode(res.body)["token"];
+      print('xdding' + token);
       if (res.statusCode == 200) {
         _secureStorage.writeSecureData(key: 'token', value: token);
         emit(AuthAuthenticated(User(token: token)));

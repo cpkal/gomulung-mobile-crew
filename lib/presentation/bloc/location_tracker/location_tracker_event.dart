@@ -13,10 +13,14 @@ class StartTracking extends LocationTrackerEvent {}
 
 class StopTracking extends LocationTrackerEvent {}
 
-class LocationChanged extends LocationTrackerEvent {
+class GetLocationStream extends LocationTrackerEvent {}
+
+class GetCurrentLocation extends LocationTrackerEvent {}
+
+class LocationChanging extends LocationTrackerEvent {
   final LatLng location;
 
-  LocationChanged(this.location);
+  LocationChanging(this.location);
 
   @override
   List<Object> get props => [location];

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:las_crew/core/util/secure_storage.dart';
-import 'package:las_crew/presentation/page/filtered_order.dart';
+import 'package:las_crew/presentation/page/orders.dart';
 import 'package:las_crew/presentation/widget/CustomAppbar.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -53,7 +53,7 @@ class OrderByCategories extends StatelessWidget {
               onTap: () {
                 //navigate to detail page
                 PersistentNavBarNavigator.pushNewScreen(context,
-                    screen: FilteredOrder());
+                    screen: OrderPage());
               },
               title: Text('Sampah terdekat'),
               trailing: Container(

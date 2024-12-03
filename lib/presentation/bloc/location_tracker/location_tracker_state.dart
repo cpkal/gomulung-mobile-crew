@@ -42,3 +42,17 @@ class PermissionDeniedForever extends LocationTrackerState {
 class PermissionGranted extends LocationTrackerState {
   PermissionGranted() : super(isTracking: false);
 }
+
+class LocationChanged extends LocationTrackerState {
+  final LatLng location;
+
+  LocationChanged(this.location)
+      : super(
+          isTracking: true,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        );
+
+  @override
+  List<Object?> get props => [location];
+}

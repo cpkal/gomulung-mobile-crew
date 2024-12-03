@@ -14,7 +14,9 @@ class LocationTrackerBloc
     on<GetPermission>(_getPermission);
     on<StartTracking>(_onStartTracking);
     on<StopTracking>(_onStopTracking);
-    on<LocationChanged>(_onLocationChanged);
+    on<GetLocationStream>(_getLocationStream);
+    on<GetCurrentLocation>(_getCurrentLocation);
+    on<LocationChanging>(_onLocationChanging);
   }
 
   Stream<Position>? _positionStream;
@@ -45,9 +47,14 @@ class LocationTrackerBloc
     );
     _positionSubscription = _positionStream!.listen((position) {
       print('Location: ${position.latitude}, ${position.longitude}');
-      add(LocationChanged(LatLng(position.latitude, position.longitude)));
+      add(LocationChanging(LatLng(position.latitude, position.longitude)));
     });
     emit(state.copyWith(isTracking: true));
+  }
+
+  void _onLocationChanging(
+      LocationChanging event, Emitter<LocationTrackerState> emit) {
+    emit(LocationChanged(event.location));
   }
 
   void _onStopTracking(StopTracking event, Emitter<LocationTrackerState> emit) {
@@ -55,11 +62,22 @@ class LocationTrackerBloc
     emit(state.copyWith(isTracking: false));
   }
 
-  void _onLocationChanged(
-      LocationChanged event, Emitter<LocationTrackerState> emit) {
+  void _getLocationStream(
+      GetLocationStream event, Emitter<LocationTrackerState> emit) {
+    emit(state.copyWith(isTracking: true));
+  }
+
+  void _getCurrentLocation(
+      GetCurrentLocation event, Emitter<LocationTrackerState> emit) async {
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    );
     emit(state.copyWith(
-      latitude: event.location.latitude,
-      longitude: event.location.longitude,
+      latitude: position.latitude,
+      longitude: position.longitude,
     ));
   }
 }
